@@ -1,8 +1,12 @@
-LAP = [0 0 0 0 0 0 0;
+filter = [0 0 0 0 0 0 0;
         0 0 0 0 0 0 0;
         0 0 0 0 0 0 0;
-        -1 -1 -1 6 -1 -1 -1;
+        -0.005 -0.005 -0.005 0.03 -0.005 -0.005 -0.005;
         0 0 0 0 0 0 0;
         0 0 0 0 0 0 0;
         0 0 0 0 0 0 0;];
-% hi Peter hi Chris
+
+image = imread('boat-test-3.jpg');
+image = rgb2gray(image);
+Y = conv2(image,filter);
+imshow(Y);
