@@ -2,7 +2,9 @@
 
 At start of work:
 - `git pull`
-- open your files and go to town
+- `git log --graph --oneline`
+	- this will let you review all changes made
+- open your project and go to town!
 
 At end of work:
 - `git pull`
