@@ -1,12 +1,12 @@
 # Git CMD reference
 
-At start of work:
+**At start of work:**
 - `git pull`
 - `git log --graph --oneline`
 	- this will let you review all changes made
 - open your project and go to town!
 
-At end of work:
+**At end of work:**
 - `git pull`
 - `git status`
     - confirm status of your files, changes, un-tracks, etc...
