@@ -103,6 +103,15 @@ int main(int argc, char *argv[])
 /* Image Processing begins                                          */
 /********************************************************************/
 
+// This code was developed on 15 November 2018 by C. Drew and P. Brine
+// working together (to get unstuck) in B123.
+//I pledge my honor that I have abided by the Stevens Honor System.
+//-- Peter Brine & C. Drew
+
+float histogram[256];				// counting buffer for the histogram
+float eqTransfer[256];			//transfer function for histogram equalization
+
+
 	for (j=0; j<height; j++)
 		for (k=0; k<width; k++)
 	    	{
@@ -110,7 +119,15 @@ int main(int argc, char *argv[])
 		}
 
 
+// insert float to divide historgram to normalize by pizel prob
 
+ // for loop
+
+ // for loop
+
+ // create histogram and transfer function vectors
+
+ // display above
 
 /********************************************************************/
 /* Image Processing ends                                          */
@@ -158,6 +175,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
-
