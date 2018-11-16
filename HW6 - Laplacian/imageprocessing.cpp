@@ -17,9 +17,12 @@ int main(int argc, char *argv[])
 	FILE  *in, *out;
 	int   j, k, width, height;
 	int ** image_in, ** image_out;
+
+// the following vars we don't think are used:
 	float sum1, sum2;
 	float new_T, old_T, delta_T;
 	long count1, count2;
+	// but I don't yet have the courage to delete them ^^^^^^^
 
 
 	if(argc<5) { printf("ERROR: Insufficient parameters!\n"); return(1);}
@@ -103,14 +106,58 @@ int main(int argc, char *argv[])
 /* Image Processing begins                                          */
 /********************************************************************/
 
-	for (j=0; j<height; j++)
-		for (k=0; k<width; k++)
-	    	{
-			image_out[j][k]=255-image_in[j][k];
+// This code was developed on 15 November 2018 by C. Drew and P. Brine
+// working together (to get unstuck) in B123.
+//I pledge my honor that I have abided by the Stevens Honor System.
+//-- Peter Brine & C. Drew
+
+float sum = 0.0;
+float convolution_output = 0.0;
+float filter[3][3] = {{0, -1, 0},
+											{-1, 4, -1},
+											{0, -1, 0}};
+
+// using x and y this time instead of j and k, just for clarity and
+// proactive with the quad-nested for-loops
+int x, y;
+// j and k already declared
+for (y=0; y < height; y++)
+{
+	for (x=0; x < width; x++)
+	{
+		// first, are excluding the outer row of pixels on the image from
+		// the convolution with the 3x3 filter. Outer row ONLY because
+		// we know it's a 3x3 filter. Else, base on size of filter.
+		if (x==0 || x==width-1 || y==0 || y==height-1)  //use == for compare
+		{
+			image_out[y][x] = image_in[y][x];
 		}
+		else
+		{
+			for (j=0; j<3; j++)
+			{
+				for (k=0; k<3; k++)
+				{
+					sum += ((float) image_in[y+j-1][x+k-1]) * filter[j][k];
+				}
+			}
 
+			convolution_output = sum;
+			sum = 0.0; // we need to reset this each iteration
+			if (convolution_output > 255)
+			{
+				convolution_output = 255;
+			}
+			else if (convolution_output < 0)
+			{
+				convolution_output = 0;
+			}
+			image_out[y][x] = (int) convolution_output;
+		}
+	}
+}
 
-
+//Homework6 lenna.512 testout.raw 512 512
 
 /********************************************************************/
 /* Image Processing ends                                          */
@@ -158,6 +205,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
-
