@@ -142,8 +142,10 @@ for (y=0; y < height; y++)
 				}
 			}
 
-			convolution_output = sum;
+			convolution_output = sum; // reassigned each iter.
 			sum = 0.0; // we need to reset this each iteration
+			// consider resetting at beginning of loop if possibly used elsewhere
+
 			if (convolution_output > 255)
 			{
 				convolution_output = 255;
