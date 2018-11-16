@@ -111,23 +111,47 @@ int main(int argc, char *argv[])
 float histogram[256];				// counting buffer for the histogram
 float eqTransfer[256];			//transfer function for histogram equalization
 
-
-	for (j=0; j<height; j++)
+// This for-loop is to build the non-normalized histogram:
+for (j=0; j<height; j++)
+	{
 		for (k=0; k<width; k++)
-	    	{
-			image_out[j][k]=255-image_in[j][k];
-		}
+	    {
+						histogram[image_in[j][k]]++;
+						// increments the histogram bin by one each time
+						// the brightness value at a given pixel is found
+			}
+	}
+
+//divide histogram by total pixels, reassign answer to same histogram:
+for(j=0; j<256; j++)
+	{
+		histogram[j] /= ((float) width*height);
+	}
+
+// Creating transfer function:
+for (j=0; j<256; j++)
+{
+	for (k=0; k<j+1; k++) // "from 0 to J"
+	{
+		eqTransfer[j] += histogram[k];
+	}
+eqTransfer[j] = (255.0 * round(eqTransfer[j])); //255.0 is "L-1" term from L6S21
+}
 
 
-// insert float to divide historgram to normalize by pizel prob
-
- // for loop
-
- // for loop
-
- // create histogram and transfer function vectors
-
- // display above
+//Applying the transfer function:
+for (j=0; j<height; j++)
+{
+	for (k=0; k<width; k++)
+	{
+		image_out[j][k] = (int) eqTransfer[image_in[j][k]];
+		/* From R-->L: brightness value of input image at pixel [j,k]
+		is applied to the input of the transfer equation. The output
+		from this is then changed into an integer, and stored in the
+		output image at [j,k].
+		*/
+	}
+}
 
 /********************************************************************/
 /* Image Processing ends                                          */
