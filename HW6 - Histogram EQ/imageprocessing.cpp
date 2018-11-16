@@ -109,7 +109,17 @@ int main(int argc, char *argv[])
 //-- Peter Brine & C. Drew
 
 float histogram[256];				// counting buffer for the histogram
-float eqTransfer[256];			//transfer function for histogram equalization
+float eqTransfer[256];			// transfer function for histogram equalization
+
+for (j=0; j<256; j++)				// setting initial values to 0.0
+	{
+		histogram[j] = 0.0;
+	}
+
+for (j=0; j<256; j++)				// setting initial values to 0.0
+	{
+		eqTransfer[j] = 0.0;
+	}
 
 // This for-loop is to build the non-normalized histogram:
 for (j=0; j<height; j++)
@@ -118,7 +128,7 @@ for (j=0; j<height; j++)
 	    {
 						histogram[image_in[j][k]]++;
 						// increments the histogram bin by one each time
-						// the brightness value at a given pixel is found
+						// according to the the brightness value at a given pixel
 			}
 	}
 
@@ -135,7 +145,10 @@ for (j=0; j<256; j++)
 	{
 		eqTransfer[j] += histogram[k];
 	}
-eqTransfer[j] = (255.0 * round(eqTransfer[j])); //255.0 is "L-1" term from L6S21
+eqTransfer[j] = floor(255.0 * eqTransfer[j]);
+			// 255.0 is "L-1" term from L6S21 (brightness is 0 - 256)
+			// we originally tried rounding by using floor+0.5,
+			// but this caused the ouput to be black. So, using floor only.
 }
 
 
