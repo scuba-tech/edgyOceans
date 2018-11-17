@@ -7,6 +7,7 @@
 Image Processing class project to experiment with obstacle detection and collision avoidance at sea by comparing and contrasting both edge-detect-based angular classification with the other approach of using directional impulse-response filters. Code will be a mismash of C++, MATLAB (hopefully Octave by the time we're done), and sloppy Python. 
 
 AUTHORS:  C.D., P.B.
+
 LICENSING: GNU GPL v.3  (TLDR: do what you like, we appreciate credit, keep everything FOSS)
 
 * * *
