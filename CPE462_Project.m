@@ -1,7 +1,7 @@
 %{
 EdgyOceans: Vertical Edge detection for Obstacle Avoidance... at sea!
-Copyright (C) 2018  Christopher Drew AND Peter Brine
-cdrew2@stevens.e
+Copyright (C) 2018  C. Drew and P. Brine
+cdrew2@stevens.edu  pbrine@stevens.edu
 
 GNU GPL v.3
 
