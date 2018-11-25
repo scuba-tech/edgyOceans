@@ -89,8 +89,8 @@ outputLoG       = abs(conv2(image,filterLoG));
 
 outputLoGVert   = abs(conv2(image,filterLoGVert));
 
-%TODO: Thresholding
-outputThresholding = [0 0 0];
+threshold = graythresh(image);
+outputThresholding = imbinarize(outputLogVert, threshold);
 
 %TODO: Blobbing
 outputBlobbing = [0 0 0];
@@ -141,7 +141,7 @@ imwrite(outputLoGVert, 'Output-6-LoGVert.png');
 subplot(3,3,7);
 imshow(outputThresholding);
 title('Thresholding'); %TODO: test graythresh() and imbinarize()
-%imwrite(outputLoGVert, 'Output-7-XXXXXXXXXXXXXXXXXXX.png');
+imwrite(outputThresholding, 'Output-7-Thresholding.png');
 
 subplot(3,3,8);
 imshow(outputBlobbing);
