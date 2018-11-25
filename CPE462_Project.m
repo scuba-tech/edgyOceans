@@ -64,11 +64,11 @@ filterLoGVert     = conv2(filterPrewittVert, filterGaussian);
 % Input Block:
 
 [fileName,pathName] = uigetfile({'*.jpg; *.png', 'Image Files (*.jpg, *.png)'},'Please Choose an Image');
-if isequal(file,0)
+if isequal(fileName,0)
    disp('No file chosen!');
    quit;
 else
-   disp(['Image selected: ', fullfile(path,file)]);
+   disp(['Image selected: ', fullfile(pathName,fileName)]);
 end
 
 image = rgb2gray(im2double(imread(fullfile(pathName, fileName))));
