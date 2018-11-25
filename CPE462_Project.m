@@ -21,13 +21,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 %}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% NOTE: Vertical edge detection |==> "Horizontal Frequency"
-
-% Setting up small filters for test battery:
+% Filter Block:
 
 %{
 TODO:
-1. Blobbing
+1. Thresholding --> Blobbing
 2. Executable
 3. Angle calculation
 4. Focal length Input
@@ -35,206 +33,122 @@ TODO:
 6. Update report:  components, usage results
 %}
 
-%{
-  filter7x7 =  [0 0 0 0 0 0 0; %first attempt
-                0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0;
-                -1 -1 -1 6 -1 -1 -1;
-                0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0;];
 
-                %}
-filter3x3EdgeDetection = [-1 0 1;
-                          -1 0 1;
-                          -1 0 1];
+filterRoberts1    = [-1 0;
+                     0  1];
 
-filter7x7HorizontalFrequency =  [0 0 -1 2 -1 0 0;
-                                 0 0 -1 2 -1 0 0;
-                                 0 0 -1 2 -1 0 0;
-                                 0 0 -1 2 -1 0 0;
-                                 0 0 -1 2 -1 0 0;
-                                 0 0 -1 2 -1 0 0;
-                                 0 0 -1 2 -1 0 0;];
+filterRoberts2    = [0 -1;
+                     1  0];
 
-filter7x7EdgeDetection = [-0.1 -0.1 -1 0 1 0.1 0.1;
-                          -0.1 -0.1 -1 0 1 0.1 0.1;
-                          -0.1 -0.1 -1 0 1 0.1 0.1;
-                          -0.1 -0.1 -1 0 1 0.1 0.1;
-                          -0.1 -0.1 -1 0 1 0.1 0.1;
-                          -0.1 -0.1 -1 0 1 0.1 0.1;
-                          -0.1 -0.1 -1 0 1 0.1 0.1;];
+filterPrewittVert = [-1 0 1;
+                     -1 0 1;
+                     -1 0 1;];
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Setting up 21x21 filters for test battery:
+filterSobelVert   = [-1 0 1;
+                     -2 0 2;
+                     -1 0 1];
 
-%{
- filter21x21 =  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 -0.2 -0.2 -0.2 -0.2 -0.2 -0.2 -0.2 -0.2 -0.2 -0.2 4 -0.2 -0.2 -0.2 -0.2 -0.2 -0.2 -0.2 -0.2  -0.2 -0.2;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
-                 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;];
-                 %}
+filterLaplacian   = [ 0 -1  0;
+                     -1  4 -1;
+                      0 -1  0];
 
-%Larger filter for vertical edge detection
-filter21x21HorizontalFrequency =  [0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;
-                0 0 0 0 0 0 0 0 0 -0.2 0.4 -0.2 0 0 0 0 0 0 0 0 0;];
+filterGaussian    = [0      0.125  0;
+                     0.125  0.5    0.125;
+                     0      0.125  0;];
 
-filter21x21EdgeDetection = [0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;
-                            0 0 0 0 0 0 0 0 0 -0.4 0 0.4 0 0 0 0 0 0 0 0 0;];
+filterLoG         = conv2(filterLaplacian, filterGaussian);
 
-
-%{
-wanna test this filter at some point: (magnitude may be too high)
-0     0     0     0     0     0     0     0     0
-0     0     1    -4     6    -4     1     0     0
-0     0     1    -4     6    -4     1     0     0
-0     0     1    -4     6    -4     1     0     0
-0     0     1    -4     6    -4     1     0     0
-0     0     1    -4     6    -4     1     0     0
-0     0     1    -4     6    -4     1     0     0
-0     0     1    -4     6    -4     1     0     0
-0     0     0     0     0     0     0     0     0
-
-convolution between:
-
-filter3x3 =
-
-     0     0     0
-    -1     2    -1
-     0     0     0
-
-and
-
-filter7x7 =
-
-     0     0    -1     2    -1     0     0
-     0     0    -1     2    -1     0     0
-     0     0    -1     2    -1     0     0
-     0     0    -1     2    -1     0     0
-     0     0    -1     2    -1     0     0
-     0     0    -1     2    -1     0     0
-     0     0    -1     2    -1     0     0
-%}
-
-image = rgb2gray(im2double(imread('boat-test-3.jpg')));
-%output7x7 = conv2(image,filter7x7);
-%output21x21 = conv2(image,filter21x21);
+filterLoGVert     = conv2(filterPrewittVert, filterGaussian);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input Block:
 
-% Row 1
+[fileName,pathName] = uigetfile({'*.jpg; *.png', 'Image Files (*.jpg, *.png)'},'Please Choose an Image');
+if isequal(file,0)
+   disp('No file chosen!');
+   quit;
+else
+   disp(['Image selected: ', fullfile(path,file)]);
+end
+
+image = rgb2gray(im2double(imread(fullfile(pathName, fileName))));
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Processing Block:
+
+outputRoberts   = abs(conv2(image,filterRoberts1));
+outputRoberts   = outputRoberts + abs(conv2(image,filterRoberts2));
+
+outputVertEdge  = abs(conv2(image,filterPrewittVert));
+
+outputLaplacian = abs(conv2(image,filterLaplacian));
+
+outputGaussian  = abs(conv2(image,filterGaussian));
+
+outputLoG       = abs(conv2(image,filterLoG));
+
+outputLoGVert   = abs(conv2(image,filterLoGVert));
+
+%TODO: Thresholding
+outputThresholding = [0 0 0];
+
+%TODO: Blobbing
+outputBlobbing = [0 0 0];
+
+%TODO: Angle calculation
+outputAngle = 0;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Display Block:
+
+% Row 1:
 
 subplot(3,3,1);
 imshow(image);
 title('Greyscale Image Input');
+imwrite(image, 'Output-1-Greyscale.png');
 
 subplot(3,3,2);
-%imagesc(im2double(filter7x7));
-%title('7x7 Horizontal Frequency');
-%axis equal;
-imshow(abs(conv2(image,filter7x7HorizontalFrequency)));
-title('7x7 Horizontal Frequency');
-
-imwrite(abs(conv2(image,filter7x7HorizontalFrequency)), '7x7HorizontalFrequency.png');
-
+imshow(outputRoberts);
+title('Roberts Omnidirectional Edge Detection');
+imwrite(outputRoberts, 'Output-2-Roberts.png');
 
 subplot(3,3,3);
-%imagesc(im2double(filter21x21));
-%title('21x21 Filter');
-%axis equal;
-imshow(abs(conv2(image,filter7x7EdgeDetection)));
-title('7x7 Edge Detection');
-
-imwrite(abs(conv2(image,filter7x7EdgeDetection)), '7x7EdgeDetection.png');
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
+imshow(outputVertEdge);
+title('Vertical Edge Detection'); %TODO: test Prewitt -vs- Sobel  (see lect.8)
+imwrite(outputVertEdge, 'Output-3-VerticalEdgeDetection.png');
 
 % Row 2:
 
 subplot(3,3,4);
-%imshow(abs(output7x7));
-%title('7x7 Laplacian Output')
-imshow(abs(conv2(image,filter3x3EdgeDetection)));
-title('3x3 Edge Detection');
-
-imwrite(abs(conv2(image,filter3x3EdgeDetection)), '3x3EdgeDetection.png');
+imshow(outputLaplacian);
+title('Laplacian Edge Detection');
+imwrite(outputLaplacian, 'Output-4-Laplacian3x3.png');
 
 subplot(3,3,5);
-imshow(abs(output7x7));
-title('7x7 Scaled-Laplacian Output');
+imshow(outputLoG);
+title('Laplacian of Gaussian (LoG)');
+imwrite(outputLoG, 'Output-5-LoG.png');
 
 
 subplot(3,3,6);
-imshow(abs(output7x7));
-title('7x7 Absolute-Laplacian Output');
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
+imshow(outputLoGVert);
+title('Vertical-Edge-Biased LoG (Vertical Edge filter convolved with Gaussian)');%TODO: convolve vertical w/ Gaussian
+imwrite(outputLoGVert, 'Output-6-LoGVert.png');
 
 % Row 3:
 
 subplot(3,3,7);
-imshow(abs(output21x21));
-title('21x21 Laplacian Output');
+imshow(outputThresholding);
+title('Thresholding'); %TODO: test graythresh() and imbinarize()
+%imwrite(outputLoGVert, 'Output-7-XXXXXXXXXXXXXXXXXXX.png');
 
 subplot(3,3,8);
-imshow(abs(output21x21));
-title('21x21 Scaled-Laplacian Output');
+imshow(outputBlobbing);
+title('Blobbing Output');
+%imwrite(outputThresholding, 'Output-8-XXXXXXXXXXXXXXXXXXX.png');
 
 subplot(3,3,9);
-imshow(abs(output21x21));
-title('21x21 Absolute-Laplacian Output');
+% TODO: find conservative angle from blob
+title('Obstacle Solution Angle');
+%imwrite(outputAngle, 'Output-9-XXXXXXXXXXXXXXXXXXX.png'); TODO: find way to write angle to text file
