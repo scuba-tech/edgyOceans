@@ -25,8 +25,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 %{
 TODO:
-1. Thresholding --> Blobbing
-2. Executable
 3. Angle calculation
 4. Focal length Input
 5. Web hosting
@@ -35,7 +33,7 @@ TODO:
 
 
 filterRoberts1    = [-1 0;
-                     0  1];
+                      0 1];
 
 filterRoberts2    = [0 -1;
                      1  0];
@@ -66,6 +64,8 @@ filterLoG         = conv2(filterLaplacian, filterGaussian);
 
 filterLoGVert     = conv2(filterPrewittVert, filterGaussian);
 
+border = 10; %pixels to remove for border created by convolutions
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Input Block:
 
@@ -77,7 +77,9 @@ else
    disp(['Image selected: ', fullfile(pathName,fileName)]);
 end
 
-image = rgb2gray(im2double(imread(fullfile(pathName, fileName))));
+imageColor = imread(fullfile(pathName, fileName));
+image = rgb2gray(im2double(imageColor));
+%image = rgb2gray(im2double(imread(fullfile(pathName, fileName))));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Processing Block:
@@ -98,17 +100,28 @@ outputLoGVert   = abs(conv2(image,filterLoGVert));
 threshold = graythresh(outputLoGVert); %set threshold level
 outputThresholding = imbinarize(outputLoGVert, threshold); %binarize image
 [width, height] = size(outputThresholding); %obtain width and height of output
-%next 4 lines: set 10px of borders to 0 to compensate for convolution
+%next 4 lines: set border pixels to 0 to compensate for convolution
 outputThresholding(1:10,:) = 0;
-outputThresholding(width-10:width,:) = 0;
-outputThresholding(:,1:10) = 0;
-outputThresholding(:,height-10:height) = 0;
+outputThresholding((width-border):width,:) = 0;
+outputThresholding(:,1:border) = 0;
+outputThresholding(:,(height-border):height) = 0;
 
-outputThresholding = medfilt2(outputThresholding,[5 5]);
-% ^^^ Experiment to median-filter threshold to eliminate small artifacts
+outputThresholding = medfilt2(outputThresholding,[7 3]);
+% ^ median-filter for threshold to eliminate small artifacts and fill-in gaps
+% the 7x3 is a vertically-oriented rectangular median filter to eliminate more
+% of the horizontal artifacts and fill-in more vertical artifacts
+outputThresholding = medfilt2(outputThresholding,[3 3]);
+% ^ this iteration is to get rid of any remaining symmetrical artifacts
 
-%TODO: Blobbing
-outputBlobbing = [0 0 0];
+
+%TODO: FINISH Blobbing
+profileVertical = any(outputThresholding > 0,1);
+profileHorizontal = any(outputThresholding > 0,2);
+xLeft   = find(profileVertical,   1, 'first');
+xRight  = find(profileVertical,   1, 'last');
+yTop = find(profileHorizontal, 1, 'first');
+yBottom    = find(profileHorizontal, 1, 'last');
+
 
 %TODO: Angle calculation
 outputAngle = 0;
@@ -122,6 +135,7 @@ subplot(3,3,1);
 imshow(image);
 title('Greyscale Image Input');
 imwrite(image, 'Output-1-Greyscale.png');
+
 
 subplot(3,3,2);
 imshow(outputRoberts);
@@ -159,11 +173,15 @@ title('Thresholding'); %TODO: test graythresh() and imbinarize()
 imwrite(outputThresholding, 'Output-7-Thresholding.png');
 
 subplot(3,3,8);
-imshow(outputBlobbing);
 title('Blobbing Output');
-%imwrite(outputThresholding, 'Output-8-XXXXXXXXXXXXXXXXXXX.png');
+%imwrite(outputThresholding, 'Output-8-Blobbing.png');
+imshow(outputThresholding);
+rectangle('Position',[xLeft yTop (xRight-xLeft) (yBottom-yTop)],'EdgeColor','r');
+%rectangle('Position',[((xLeft-xRight)/2 + 2) ((yBottom-yTop)/2 + 2) ((xLeft-xRight)/2 - 2) ((yBottom-yTop)/2 - 2)],'FaceColor','red');
 
 subplot(3,3,9);
 % TODO: find conservative angle from blob
 title('Obstacle Solution Angle');
+imshow(imageColor);
+rectangle('Position',[xLeft yTop (xRight-xLeft) (yBottom-yTop)],'EdgeColor','r');
 %imwrite(outputAngle, 'Output-9-XXXXXXXXXXXXXXXXXXX.png'); TODO: find way to write angle to text file
