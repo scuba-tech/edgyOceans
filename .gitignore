@@ -10,6 +10,10 @@
 # Excluding all compiled binaries and their folders and logs
 for*/
 Pack*.html
+*.prj
+
+# Excluding test files
+HW*/
 
 # Compiled MEX binaries (all platforms)
 *.mex*
