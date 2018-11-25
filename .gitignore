@@ -12,6 +12,9 @@ for*/
 Pack*.html
 *.prj
 
+# Excluding test files
+HW*/
+
 # Compiled MEX binaries (all platforms)
 *.mex*
 
