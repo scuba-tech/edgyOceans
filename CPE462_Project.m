@@ -26,6 +26,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 % Setting up small filters for test battery:
 
 %{
+TODO:
+1. Blobbing
+2. Executable
+3. Angle calculation
+4. Focal length Input
+5. Web hosting
+6. Update report:  components, usage results
+%}
+
+%{
   filter7x7 =  [0 0 0 0 0 0 0; %first attempt
                 0 0 0 0 0 0 0;
                 0 0 0 0 0 0 0;
