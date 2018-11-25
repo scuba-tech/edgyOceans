@@ -52,10 +52,16 @@ filterLaplacian   = [ 0 -1  0;
                      -1  4 -1;
                       0 -1  0];
 
+%{this filter is too weak, testing stronger filter
 filterGaussian    = [0      0.125  0;
                      0.125  0.5    0.125;
                      0      0.125  0;];
-
+                     %}
+filterGaussian    = [1  4  7  4  1;
+                     4 16 26 16  4;
+                     7 26 41 26  7;
+                     4 16 26 16  4;
+                     1  4  7  4  1;]/273;
 filterLoG         = conv2(filterLaplacian, filterGaussian);
 
 filterLoGVert     = conv2(filterPrewittVert, filterGaussian);
@@ -89,8 +95,17 @@ outputLoG       = abs(conv2(image,filterLoG));
 
 outputLoGVert   = abs(conv2(image,filterLoGVert));
 
-threshold = graythresh(image);
-outputThresholding = imbinarize(outputLogVert, threshold);
+threshold = graythresh(outputLoGVert); %set threshold level
+outputThresholding = imbinarize(outputLoGVert, threshold); %binarize image
+[width, height] = size(outputThresholding); %obtain width and height of output
+%next 4 lines: set 10px of borders to 0 to compensate for convolution
+outputThresholding(1:10,:) = 0;
+outputThresholding(width-10:width,:) = 0;
+outputThresholding(:,1:10) = 0;
+outputThresholding(:,height-10:height) = 0;
+
+outputThresholding = medfilt2(outputThresholding,[5 5]);
+% ^^^ Experiment to median-filter threshold to eliminate small artifacts
 
 %TODO: Blobbing
 outputBlobbing = [0 0 0];
