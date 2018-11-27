@@ -50,11 +50,12 @@ filterLaplacian   = [ 0 -1  0;
                      -1  4 -1;
                       0 -1  0];
 
-%{this filter is too weak, testing stronger filter
+%{
+this filter is too weak, testing stronger filter
 filterGaussian    = [0      0.125  0;
                      0.125  0.5    0.125;
                      0      0.125  0;];
-                     %}
+%}
 filterGaussian    = [1  4  7  4  1;
                      4 16 26 16  4;
                      7 26 41 26  7;
