@@ -80,6 +80,8 @@ end
 
 imageColor = imread(fullfile(pathName, fileName));
 image = rgb2gray(im2double(imageColor));
+% image = histeq(image); % not used due to amplifying noise. Needs
+% tweaking.
 %image = rgb2gray(im2double(imread(fullfile(pathName, fileName))));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
