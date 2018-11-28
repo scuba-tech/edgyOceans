@@ -13,7 +13,7 @@ Pack*.html
 *.prj
 
 # Excluding test files
-# Output*.*
+Output*
 HW*/
 
 # Compiled MEX binaries (all platforms)
