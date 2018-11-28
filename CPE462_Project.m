@@ -98,7 +98,7 @@ outputLoG       = abs(conv2(image,filterLoG));
 
 outputLoGVert   = abs(conv2(image,filterLoGVert));
 
-threshold = graythresh(outputLoGVert); %set threshold level
+threshold = graythresh(image); %set threshold level
 outputThresholding = imbinarize(outputLoGVert, threshold); %binarize image
 [width, height] = size(outputThresholding); %obtain width and height of output
 %next 4 lines: set border pixels to 0 to compensate for convolution
@@ -111,8 +111,10 @@ outputThresholding = medfilt2(outputThresholding,[7 3]);
 % ^ median-filter for threshold to eliminate small artifacts and fill-in gaps
 % the 7x3 is a vertically-oriented rectangular median filter to eliminate more
 % of the horizontal artifacts and fill-in more vertical artifacts
-outputThresholding = medfilt2(outputThresholding,[3 3]);
+% outputThresholding = medfilt2(outputThresholding,[3 3]);
 % ^ this iteration is to get rid of any remaining symmetrical artifacts
+% changes as of 28 November: commented-out 2nd median filter, changed
+% threshold from "outputLogVert" to "image" (line ~ 101)
 
 
 %TODO: FINISH Blobbing
