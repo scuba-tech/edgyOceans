@@ -98,7 +98,7 @@ outputLoG       = abs(conv2(image,filterLoG));
 
 outputLoGVert   = abs(conv2(image,filterLoGVert));
 
-threshold = graythresh(image); %set threshold level
+threshold = (2*graythresh(image) + 8*graythresh(outputLoGVert))/10; %set threshold level
 outputThresholding = imbinarize(outputLoGVert, threshold); %binarize image
 [width, height] = size(outputThresholding); %obtain width and height of output
 %next 4 lines: set border pixels to 0 to compensate for convolution
