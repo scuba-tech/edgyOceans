@@ -135,13 +135,13 @@ Iterative global threshold estimate algorithm (Lec. 8, s.24)
 5. Repeat steps 2~4 until changes in T become small (start with a=5)
 */
 
-int threshold = 127;
-int thresholdOld = threshold;
-long int avgLow = 0;
-int countLow = 0;
-long int avgHigh = 0;
-int countHigh = 0;
-int delta = 255; //5 represents a
+int threshold = 127;					// starting at the midpoint (0~255)
+int thresholdOld = threshold;	// userd in order to find the iterative delta
+long int avgLow = 0; 					// average value of all pixels below threshold
+int countLow = 0;							// total number of pixels below threshold
+long int avgHigh = 0;					// average value of all pixels above threshold
+int countHigh = 0;						// total number of pixels above threshold
+int delta = 255; 							// initialize delta to large value
 
 while(delta > 1)
 {
@@ -151,26 +151,29 @@ while(delta > 1)
 	avgHigh = 0;
 	countLow = 0;
 	countHigh = 0;
-	for (j=0; j < height; j++)
+	for (j=0; j < height; j++) 	// looping for height of image
 	{
-		for (k=0; k < width; k++)
+		for (k=0; k < width; k++) // looping for width of image
 		{
-			if(image_in[j][k] <= threshold) //if pixels are below threshold...
+			if(image_in[j][k] <= threshold) //if pixels are at or below threshold...
 			{
 				avgLow += image_in[j][k]; //add to low average variable
-				countLow++; //keep track of how many pixels are below threshold
+				countLow++; //keep track of how many pixels are at or below threshold
 			}
-			else //otherwise, if pixels are above threshold...
+			else //otherwise, if pixels above threshold...
 			{
 				avgHigh += image_in[j][k]; //add to high average variable
 				countHigh++; //keep track of how many pixels are above threshold
 			}
 		}
 	}
-	avgLow /= countLow; //calculate average of pixels below threshold
-	avgHigh /= countHigh; //calculate average of pixels above threshold
-	threshold = (avgLow + avgHigh)/2; //calculate new threshold
-	delta = abs(threshold - thresholdOld); //compare old threshold to new
+	avgLow /= countLow; //calc.average brightness value of pixels below threshold
+	avgHigh /= countHigh; //calc. average brightness value of pixels above threshold
+	// ^^^ waiting until after the image looping to find these, to save CPU time
+	threshold = (avgLow + avgHigh)/2; 			// calculate new threshold
+	// ^ goal of this loop is to eventually place the threshold cutoff
+	// at the center of "area" of the original image histogram map
+	delta = abs(threshold - thresholdOld); 	// compare old threshold to new
 	printf("Threshold: %d\n", threshold);
 	printf("Delta: %d\n", delta);
 }
@@ -182,7 +185,8 @@ for(j=0; j<height; j++)
 		else //otherwise, if input pixel is above threshold...
 			image_out[j][k] = 255; //set output pixel to white
 
-//Homework6 lenna.512 testout.raw 512 512
+// P.B.'s terminal command: Homework6 lenna.512 testout.raw 512 512
+// Everyone else, use HW7/(exec) for path with same arguments
 
 /********************************************************************/
 /* Image Processing ends                                          */
