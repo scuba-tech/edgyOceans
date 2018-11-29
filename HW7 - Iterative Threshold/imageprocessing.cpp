@@ -111,53 +111,76 @@ int main(int argc, char *argv[])
 //I pledge my honor that I have abided by the Stevens Honor System.
 //-- Peter Brine & C. Drew
 
-float sum = 0.0;
-float convolution_output = 0.0;
-float filter[3][3] = {{0, -1, 0},
-											{-1, 4, -1},
-											{0, -1, 0}};
+/*
+Based on the imageprocessing.c structure, write a small routine which can
+automatically calculate the global threshold value according to the
+iterative global threshold estimation algorithm we discussed in class.
 
-// using x and y this time instead of j and k, just for clarity and
-// proactive with the quad-nested for-loops
-int x, y;
-// j and k already declared
-for (y=0; y < height; y++)
+Hint: you have to initialize a T; then read through the image several times
+to update the T; your iteration will stop when your newly updated Ti is
+not much different from the previous Ti-1, i.e. T i – Ti-1< a.
+You can let a = 5 for example.
+You should try to let the program display the updated Ti at each iteration
+so you’ll have an idea of whether it is running properly.
+Finally you should apply your final T to the image and obtained a
+binary output image and print out the result.
+
+Iterative global threshold estimate algorithm (Lec. 8, s.24)
+1. Select an arbitrary initial threshold T
+2. Segment the iage to obtain two pixel groups:
+			Group 1 pixel values > T
+			Group 2 pixel values ≤ T
+3. Compute the average values u_1 and u_2 of group 1 and 2 pixels
+4. Update the threshold value; T = 1/2 (u_1 + u_2)
+5. Repeat steps 2~4 until changes in T become small (start with a=5)
+*/
+
+int threshold = 127;
+int thresholdOld = threshold;
+long int avgLow = 0;
+int countLow = 0;
+long int avgHigh = 0;
+int countHigh = 0;
+int delta = 255; //5 represents a
+
+while(delta > 1)
 {
-	for (x=0; x < width; x++)
+	//reset variables and set old threshold to current threshold
+	thresholdOld = threshold;
+	avgLow = 0;
+	avgHigh = 0;
+	countLow = 0;
+	countHigh = 0;
+	for (j=0; j < height; j++)
 	{
-		// first, are excluding the outer row of pixels on the image from
-		// the convolution with the 3x3 filter. Outer row ONLY because
-		// we know it's a 3x3 filter. Else, base on size of filter.
-		if (x==0 || x==width-1 || y==0 || y==height-1)  //use == for compare
+		for (k=0; k < width; k++)
 		{
-			image_out[y][x] = image_in[y][x];
-		}
-		else
-		{
-			for (j=0; j<3; j++)
+			if(image_in[j][k] <= threshold) //if pixels are below threshold...
 			{
-				for (k=0; k<3; k++)
-				{
-					sum += ((float) image_in[y+j-1][x+k-1]) * filter[j][k];
-				}
+				avgLow += image_in[j][k]; //add to low average variable
+				countLow++; //keep track of how many pixels are below threshold
 			}
-
-			convolution_output = sum; // reassigned each iter.
-			sum = 0.0; // we need to reset this each iteration
-			// consider resetting at beginning of loop if possibly used elsewhere
-
-			if (convolution_output > 255)
+			else //otherwise, if pixels are above threshold...
 			{
-				convolution_output = 255;
+				avgHigh += image_in[j][k]; //add to high average variable
+				countHigh++; //keep track of how many pixels are above threshold
 			}
-			else if (convolution_output < 0)
-			{
-				convolution_output = 0;
-			}
-			image_out[y][x] = (int) convolution_output;
 		}
 	}
+	avgLow /= countLow; //calculate average of pixels below threshold
+	avgHigh /= countHigh; //calculate average of pixels above threshold
+	threshold = (avgLow + avgHigh)/2; //calculate new threshold
+	delta = abs(threshold - thresholdOld); //compare old threshold to new
+	printf("Threshold: %d\n", threshold);
+	printf("Delta: %d\n", delta);
 }
+
+for(j=0; j<height; j++)
+	for(k=0; k<width; k++)
+		if(image_in[j][k] <= threshold) //if input pixel is below threshold...
+			image_out[j][k] = 0; //set output pixel to black
+		else //otherwise, if input pixel is above threshold...
+			image_out[j][k] = 255; //set output pixel to white
 
 //Homework6 lenna.512 testout.raw 512 512
 
