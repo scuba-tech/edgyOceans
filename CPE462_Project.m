@@ -23,15 +23,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Filter Block:
 
-%{
-TODO:
-3. Angle calculation
-4. Focal length Input
-5. Web hosting
-6. Update report:  components, usage results
-%}
-
-
 filterRoberts1    = [-1 0;
                       0 1];
 
@@ -73,7 +64,7 @@ border = 10; %pixels to remove for border created by convolutions
 [fileName,pathName] = uigetfile({'*.jpg; *.png', 'Image Files (*.jpg, *.png)'},'Please Choose an Image');
 if isequal(fileName,0)
    disp('No file chosen!');
-   quit;
+   return;
 else
    disp(['Image selected: ', fullfile(pathName,fileName)]);
 end
@@ -81,6 +72,22 @@ end
 imageColor = imread(fullfile(pathName, fileName));
 image = rgb2gray(im2double(imageColor));
 %image = rgb2gray(im2double(imread(fullfile(pathName, fileName))));
+
+%receive input for optics parameters
+userInput = inputdlg({'Enter sensor width (mm):','Enter lens focal length (mm):'},'Optical Parameter Input',[1 35],{'35','50'});
+%to catch if user did not input anything, check if length is equal to 2
+if length(userInput) ~= 2
+  warndlg('Invalid Entry! Please enter a number.','Danger Will Robinson!');
+  return;
+end
+sensorSize  = str2num(userInput{1}); %convert string to number
+focalLength = str2num(userInput{2});
+%check if length of each variable 1 to make sure user did not input a string
+if length(sensorSize) ~= 1 | length(focalLength) ~= 1
+  warndlg('Invalid Entry! Please enter a number.','Danger Will Robinson!');
+  return;
+end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Processing Block:
@@ -117,17 +124,32 @@ outputThresholding(:,(height-border):height) = 0;
 % threshold from "outputLogVert" to "image" (line ~ 101)
 
 
-%TODO: FINISH Blobbing
+% Drawing the box:
 profileVertical = any(outputThresholding > 0,1);
 profileHorizontal = any(outputThresholding > 0,2);
 xLeft   = find(profileVertical,   1, 'first');
 xRight  = find(profileVertical,   1, 'last');
 yTop = find(profileHorizontal, 1, 'first');
 yBottom    = find(profileHorizontal, 1, 'last');
+position = [xLeft yTop (xRight-xLeft) (yBottom-yTop)];
+obstacleX = (xRight - xLeft) / 2;
+obstacleY = (yBottom - yTop) / 2;
+% Creating the angle of view from above values... :
+% AoV = 2 arctan (d / (2F)) where d = sensor width and F = focal length
+% assuming infinite focus
+angleOfView = rad2deg(2*atan(sensorSize/(2*focalLength)));
+% now, we convert to degrees per pixel column:
+[widthImage, heightImage] = size(imageColor);
+degColumns = (angleOfView / widthImage);
+% now, we find the angle to the obstacle (L vs R) :
+obstacleAngle = degColumns * (obstacleX - (widthImage/2));
+% ^^^ + is right of center ; - is left of center
 
+outputObstacleBoundary = insertShape(imageColor,'rectangle',position,'LineWidth',3,'Color','red');
+outputObstacleBoundary = insertText(outputObstacleBoundary,[obstacleX obstacleY],'TextColor','red');
+print(obstacleAngle);
 
-%TODO: Angle calculation
-outputAngle = 0;
+% TODO: PRINT OBSTACLE ANGLE ON OUTPUT GRAPHIC
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display Block:
@@ -147,7 +169,7 @@ imwrite(outputRoberts, 'Output-2-Roberts.png');
 
 subplot(3,3,3);
 imshow(outputVertEdge);
-title('Vertical Edge Detection'); %TODO: test Prewitt -vs- Sobel  (see lect.8)
+title('Vertical Edge Detection');
 imwrite(outputVertEdge, 'Output-3-VerticalEdgeDetection.png');
 
 % Row 2:
@@ -165,26 +187,26 @@ imwrite(outputLoG, 'Output-5-LoG.png');
 
 subplot(3,3,6);
 imshow(outputLoGVert);
-title('Vertical-Edge-Biased LoG (Vertical Edge filter convolved with Gaussian)');%TODO: convolve vertical w/ Gaussian
+title('Vertical-Edge-Biased LoG (Vertical Edge filter convolved with Gaussian)');
 imwrite(outputLoGVert, 'Output-6-LoGVert.png');
 
 % Row 3:
 
 subplot(3,3,7);
 imshow(outputThresholding);
-title('Thresholding'); %TODO: test graythresh() and imbinarize()
+title('Thresholding');
 imwrite(outputThresholding, 'Output-7-Thresholding.png');
 
 subplot(3,3,8);
 title('Blobbing Output');
 %imwrite(outputThresholding, 'Output-8-Blobbing.png');
 imshow(outputThresholding);
-rectangle('Position',[xLeft yTop (xRight-xLeft) (yBottom-yTop)],'EdgeColor','r');
+rectangle('Position',position,'EdgeColor','r');
 %rectangle('Position',[((xLeft-xRight)/2 + 2) ((yBottom-yTop)/2 + 2) ((xLeft-xRight)/2 - 2) ((yBottom-yTop)/2 - 2)],'FaceColor','red');
 
 subplot(3,3,9);
 % TODO: find conservative angle from blob
 title('Obstacle Solution Angle');
 imshow(imageColor);
-rectangle('Position',[xLeft yTop (xRight-xLeft) (yBottom-yTop)],'EdgeColor','r');
-%imwrite(outputAngle, 'Output-9-XXXXXXXXXXXXXXXXXXX.png'); TODO: find way to write angle to text file
+imwrite(outputObstacleBoundary, 'Output-9-ObstacleBoundary.png');
+%TODO: find way to write angle to text file
