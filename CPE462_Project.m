@@ -194,11 +194,11 @@ title('Thresholding');
 imwrite(outputThresholding, 'Output-7-Thresholding.png');
 
 subplot(3,3,8);
-title('Blobbing Output');
 imshow(outputThresholding);
+title('Blobbing Output');
 rectangle('Position',position,'EdgeColor','r');
 
 subplot(3,3,9);
-title('Obstacle Solution Angle');
 imshow(outputObstacleBoundary);
+title('Obstacle Solution Angle');
 imwrite(outputObstacleBoundary, 'Output-9-ObstacleBoundary.png');
