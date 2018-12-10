@@ -139,16 +139,14 @@ obstacleY = (yBottom + yTop) / 2;
 % assuming infinite focus
 angleOfView = rad2deg(2*atan(sensorSize/(2*focalLength)));
 % now, we convert to degrees per pixel column:
-[heightImage, widthImage] = size(imageColor);
+[heightImage, widthImage] = size(image); %use image instead of color image because size() is affected by the total dimensions
 degColumns = (angleOfView / widthImage);
 % now, we find the angle to the obstacle (L vs R) :
 obstacleAngle = degColumns * (obstacleX - (widthImage/2));
 % ^^^ + is right of center ; - is left of center
 
 outputObstacleBoundary = insertShape(imageColor,'rectangle',position,'LineWidth',3,'Color','red');
-outputObstacleBoundary = insertText(outputObstacleBoundary,[obstacleX obstacleY],num2str(obstacleAngle),'TextColor','red');
-
-% TODO: PRINT OBSTACLE ANGLE ON OUTPUT GRAPHIC
+outputObstacleBoundary = insertText(outputObstacleBoundary, [obstacleX obstacleY], num2str(obstacleAngle), 'TextColor', 'red', 'BoxColor', 'white', 'FontSize', 16, 'AnchorPoint', 'Center', 'BoxOpacity', 0.8);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display Block:
@@ -198,14 +196,10 @@ imwrite(outputThresholding, 'Output-7-Thresholding.png');
 
 subplot(3,3,8);
 title('Blobbing Output');
-%imwrite(outputThresholding, 'Output-8-Blobbing.png');
 imshow(outputThresholding);
 rectangle('Position',position,'EdgeColor','r');
-%rectangle('Position',[((xLeft-xRight)/2 + 2) ((yBottom-yTop)/2 + 2) ((xLeft-xRight)/2 - 2) ((yBottom-yTop)/2 - 2)],'FaceColor','red');
 
 subplot(3,3,9);
-% TODO: find conservative angle from blob
 title('Obstacle Solution Angle');
 imshow(outputObstacleBoundary);
 imwrite(outputObstacleBoundary, 'Output-9-ObstacleBoundary.png');
-%TODO: find way to write angle to text file
