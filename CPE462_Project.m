@@ -125,13 +125,13 @@ outputThresholding(:,(height-border):height) = 0;
 
 
 % Drawing the box:
-profileVertical = any(outputThresholding, 2);
-profileHorizontal = any(outputThresholding, 1);
+profileVertical = any(outputThresholding, 1);
+profileHorizontal = any(outputThresholding, 2);
 xLeft   = find(profileVertical,   1, 'first');
 xRight  = find(profileVertical,   1, 'last');
 yTop = find(profileHorizontal, 1, 'first');
 yBottom    = find(profileHorizontal, 1, 'last');
-position = [xLeft yTop (xRight-xLeft) (yBottom-yTop)];
+position = [xLeft yBottom (xRight-xLeft) (yBottom-yTop)];
 obstacleX = (xRight - xLeft) / 2;
 obstacleY = (yBottom - yTop) / 2;
 % Creating the angle of view from above values... :
