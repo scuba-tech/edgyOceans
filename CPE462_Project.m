@@ -129,11 +129,11 @@ profileVertical = any(outputThresholding, 1);
 profileHorizontal = any(outputThresholding, 2);
 xLeft   = find(profileVertical,   1, 'first');
 xRight  = find(profileVertical,   1, 'last');
-yBottom = find(profileHorizontal, 1, 'first');
-yTop    = find(profileHorizontal, 1, 'last');
-position = [xLeft yBottom (xRight-xLeft) (yBottom-yTop)];
-obstacleX = (xRight+xLeft)/2;
-obstacleY = (yTop+yBottom)/2;
+yTop = find(profileHorizontal, 1, 'first');
+yBottom    = find(profileHorizontal, 1, 'last');
+position = [xLeft yTop (xRight-xLeft) (yBottom-yTop)];
+obstacleX = (xRight + xLeft) / 2;
+obstacleY = (yBottom + yTop) / 2;
 % Creating the angle of view from above values... :
 % AoV = 2 arctan (d / (2F)) where d = sensor width and F = focal length
 % assuming infinite focus
