@@ -146,8 +146,7 @@ obstacleAngle = degColumns * (obstacleX - (widthImage/2));
 % ^^^ + is right of center ; - is left of center
 
 outputObstacleBoundary = insertShape(imageColor,'rectangle',position,'LineWidth',3,'Color','red');
-outputObstacleBoundary = insertText(outputObstacleBoundary,[obstacleX obstacleY],'TextColor','red');
-print(obstacleAngle);
+outputObstacleBoundary = insertText(outputObstacleBoundary,[obstacleX obstacleY],num2str(obstacleAngle),'TextColor','red');
 
 % TODO: PRINT OBSTACLE ANGLE ON OUTPUT GRAPHIC
 
