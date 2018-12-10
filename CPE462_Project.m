@@ -107,12 +107,12 @@ outputLoGVert   = abs(conv2(image,filterLoGVert));
 
 threshold = graythresh(image); %set threshold level
 outputThresholding = imbinarize(outputLoGVert, threshold); %binarize image
-[width, height] = size(outputThresholding); %obtain width and height of output
+[height, width] = size(outputThresholding); %obtain width and height of output
 %next 4 lines: set border pixels to 0 to compensate for convolution
-outputThresholding(1:10,:) = 0;
-outputThresholding((width-border):width,:) = 0;
+outputThresholding(1:border,:) = 0;
+outputThresholding(:,(width-border):width) = 0;
 outputThresholding(:,1:border) = 0;
-outputThresholding(:,(height-border):height) = 0;
+outputThresholding((height-border):height,:) = 0;
 
 % outputThresholding = medfilt2(outputThresholding,[7 3]);
 % ^ median-filter for threshold to eliminate small artifacts and fill-in gaps
@@ -139,7 +139,7 @@ obstacleY = (yBottom + yTop) / 2;
 % assuming infinite focus
 angleOfView = rad2deg(2*atan(sensorSize/(2*focalLength)));
 % now, we convert to degrees per pixel column:
-[widthImage, heightImage] = size(imageColor);
+[heightImage, widthImage] = size(imageColor);
 degColumns = (angleOfView / widthImage);
 % now, we find the angle to the obstacle (L vs R) :
 obstacleAngle = degColumns * (obstacleX - (widthImage/2));
