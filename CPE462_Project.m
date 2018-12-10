@@ -64,7 +64,7 @@ imageColor = imread(fullfile(pathName, fileName));
 image = rgb2gray(im2double(imageColor));
 
 %receive input for optics parameters
-userInput = inputdlg({'Enter sensor width (mm):','Enter lens focal length (mm):'},'Optical Parameter Input',[1 35],{'35','50'});
+userInput = inputdlg({'Enter sensor width (mm):','Enter lens focal length (mm):'},'Optical Parameter Input',[1 50],{'35','50'});
 %to catch if user did not input anything, check if length is equal to 2
 if length(userInput) ~= 2
   warndlg('Invalid Entry! Please enter a number.','Danger Will Robinson!');
