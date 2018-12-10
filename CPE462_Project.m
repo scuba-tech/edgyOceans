@@ -33,25 +33,16 @@ filterPrewittVert = [-1 0 1;
                      -1 0 1;
                      -1 0 1;];
 
-filterSobelVert   = [-1 0 1;
-                     -2 0 2;
-                     -1 0 1];
-
 filterLaplacian   = [ 0 -1  0;
                      -1  4 -1;
                       0 -1  0];
 
-%{
-this filter is too weak, testing stronger filter
-filterGaussian    = [0      0.125  0;
-                     0.125  0.5    0.125;
-                     0      0.125  0;];
-%}
 filterGaussian    = [1  4  7  4  1;
                      4 16 26 16  4;
                      7 26 41 26  7;
                      4 16 26 16  4;
                      1  4  7  4  1;]/273;
+
 filterLoG         = conv2(filterLaplacian, filterGaussian);
 
 filterLoGVert     = conv2(filterPrewittVert, filterGaussian);
@@ -71,7 +62,6 @@ end
 
 imageColor = imread(fullfile(pathName, fileName));
 image = rgb2gray(im2double(imageColor));
-%image = rgb2gray(im2double(imread(fullfile(pathName, fileName))));
 
 %receive input for optics parameters
 userInput = inputdlg({'Enter sensor width (mm):','Enter lens focal length (mm):'},'Optical Parameter Input',[1 35],{'35','50'});
@@ -87,7 +77,6 @@ if length(sensorSize) ~= 1 | length(focalLength) ~= 1
   warndlg('Invalid Entry! Please enter a number.','Danger Will Robinson!');
   return;
 end
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Processing Block:
@@ -121,17 +110,16 @@ outputThresholding((height-border):height,:) = 0;
  outputThresholding = medfilt2(outputThresholding,[3 3]);
 % ^ this iteration is to get rid of any remaining symmetrical artifacts
 % changes as of 28 November: commented-out 2nd median filter, changed
-% threshold from "outputLogVert" to "image" (line ~ 101)
-
+% threshold from "outputLogVert" to "image"
 
 % Drawing the box:
-profileVertical = any(outputThresholding, 1);
+profileVertical   = any(outputThresholding, 1);
 profileHorizontal = any(outputThresholding, 2);
-xLeft   = find(profileVertical,   1, 'first');
-xRight  = find(profileVertical,   1, 'last');
-yTop = find(profileHorizontal, 1, 'first');
-yBottom    = find(profileHorizontal, 1, 'last');
-position = [xLeft yTop (xRight-xLeft) (yBottom-yTop)];
+xLeft     = find(profileVertical,   1, 'first');
+xRight    = find(profileVertical,   1, 'last');
+yTop      = find(profileHorizontal, 1, 'first');
+yBottom   = find(profileHorizontal, 1, 'last');
+position  = [xLeft yTop (xRight-xLeft) (yBottom-yTop)];
 obstacleX = (xRight + xLeft) / 2;
 obstacleY = (yBottom + yTop) / 2;
 % Creating the angle of view from above values... :
@@ -145,12 +133,14 @@ degColumns = (angleOfView / widthImage);
 obstacleAngle = round((degColumns*(obstacleX-(widthImage/2))),2);
 % ^^^ + is right of center ; - is left of center
 
-if obstacleX ~= 0 | obstacleY ~= 0 %if an object is detected
-  outputObstacleBoundary = insertShape(imageColor,'rectangle',position,'LineWidth',3,'Color','red');
+if obstacleX ~= 0 | obstacleY ~= 0 %if an obstacle is detected
+  outputObstacleBoundary = insertShape(imageColor,'rectangle',position,'LineWidth',5,'Color','red');
   outputObstacleBoundary = insertText(outputObstacleBoundary, [obstacleX obstacleY], num2str(obstacleAngle), 'TextColor', 'red', 'BoxColor', 'white', 'FontSize', 20, 'AnchorPoint', 'Center', 'BoxOpacity', 0.7);
-else
+else %if no obstacle is detected
   outputObstacleBoundary = imageColor;
+  position = [0 0 1 1]; %draw a 1px box in top left hand corner
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display Block:
 
@@ -160,7 +150,6 @@ subplot(3,3,1);
 imshow(image);
 title('Greyscale Image Input');
 imwrite(image, 'Output-1-Greyscale.png');
-
 
 subplot(3,3,2);
 imshow(outputRoberts);
@@ -184,10 +173,9 @@ imshow(outputLoG);
 title('Laplacian of Gaussian (LoG)');
 imwrite(outputLoG, 'Output-5-LoG.png');
 
-
 subplot(3,3,6);
 imshow(outputLoGVert);
-title('Vertical-Edge-Biased LoG (Vertical Edge filter convolved with Gaussian)');
+title('Vertical Edge filter convolved with Gaussian');
 imwrite(outputLoGVert, 'Output-6-LoGVert.png');
 
 % Row 3:
@@ -204,5 +192,5 @@ rectangle('Position',position,'EdgeColor','r');
 
 subplot(3,3,9);
 imshow(outputObstacleBoundary);
-title('Obstacle Solution Angle');
+title('Angle to Obstacle Centroid');
 imwrite(outputObstacleBoundary, 'Output-9-ObstacleBoundary.png');
