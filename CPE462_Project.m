@@ -145,8 +145,12 @@ degColumns = (angleOfView / widthImage);
 obstacleAngle = round((degColumns*(obstacleX-(widthImage/2))),2);
 % ^^^ + is right of center ; - is left of center
 
-outputObstacleBoundary = insertShape(imageColor,'rectangle',position,'LineWidth',3,'Color','red');
-outputObstacleBoundary = insertText(outputObstacleBoundary, [obstacleX obstacleY], num2str(obstacleAngle), 'TextColor', 'red', 'BoxColor', 'white', 'FontSize', 20, 'AnchorPoint', 'Center', 'BoxOpacity', 0.7);
+if obstacleX ~= 0 | obstacleY ~= 0 %if an object is detected
+  outputObstacleBoundary = insertShape(imageColor,'rectangle',position,'LineWidth',3,'Color','red');
+  outputObstacleBoundary = insertText(outputObstacleBoundary, [obstacleX obstacleY], num2str(obstacleAngle), 'TextColor', 'red', 'BoxColor', 'white', 'FontSize', 20, 'AnchorPoint', 'Center', 'BoxOpacity', 0.7);
+else
+  outputObstacleBoundary = imageColor;
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display Block:
 
