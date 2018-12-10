@@ -142,12 +142,11 @@ angleOfView = rad2deg(2*atan(sensorSize/(2*focalLength)));
 [heightImage, widthImage] = size(image); %use image instead of color image because size() is affected by the total dimensions
 degColumns = (angleOfView / widthImage);
 % now, we find the angle to the obstacle (L vs R) :
-obstacleAngle = degColumns * (obstacleX - (widthImage/2));
+obstacleAngle = round((degColumns*(obstacleX-(widthImage/2))),1);
 % ^^^ + is right of center ; - is left of center
 
 outputObstacleBoundary = insertShape(imageColor,'rectangle',position,'LineWidth',3,'Color','red');
-outputObstacleBoundary = insertText(outputObstacleBoundary, [obstacleX obstacleY], num2str(obstacleAngle), 'TextColor', 'red', 'BoxColor', 'white', 'FontSize', 16, 'AnchorPoint', 'Center', 'BoxOpacity', 0.8);
-
+outputObstacleBoundary = insertText(outputObstacleBoundary, [obstacleX obstacleY], strcat(num2str(obstacleAngle),'˚'), 'TextColor', 'red', 'BoxColor', 'white', 'FontSize', 16, 'AnchorPoint', 'Center', 'BoxOpacity', 0.8);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display Block:
 
