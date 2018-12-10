@@ -146,7 +146,7 @@ obstacleAngle = round((degColumns*(obstacleX-(widthImage/2))),2);
 % ^^^ + is right of center ; - is left of center
 
 outputObstacleBoundary = insertShape(imageColor,'rectangle',position,'LineWidth',3,'Color','red');
-outputObstacleBoundary = insertText(outputObstacleBoundary, [obstacleX obstacleY], num2str(obstacleAngle), 'TextColor', 'red', 'BoxColor', 'white', 'FontSize', 16, 'AnchorPoint', 'Center', 'BoxOpacity', 0.8);
+outputObstacleBoundary = insertText(outputObstacleBoundary, [obstacleX obstacleY], num2str(obstacleAngle), 'TextColor', 'red', 'BoxColor', 'white', 'FontSize', 20, 'AnchorPoint', 'Center', 'BoxOpacity', 0.7);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display Block:
 
