@@ -125,8 +125,8 @@ outputThresholding(:,(height-border):height) = 0;
 
 
 % Drawing the box:
-profileVertical = any(outputThresholding > 0,1);
-profileHorizontal = any(outputThresholding > 0,2);
+profileVertical = any(outputThresholding, 2);
+profileHorizontal = any(outputThresholding, 1);
 xLeft   = find(profileVertical,   1, 'first');
 xRight  = find(profileVertical,   1, 'last');
 yTop = find(profileHorizontal, 1, 'first');
@@ -206,6 +206,6 @@ rectangle('Position',position,'EdgeColor','r');
 subplot(3,3,9);
 % TODO: find conservative angle from blob
 title('Obstacle Solution Angle');
-imshow(imageColor);
+imshow(outputObstacleBoundary);
 imwrite(outputObstacleBoundary, 'Output-9-ObstacleBoundary.png');
 %TODO: find way to write angle to text file
