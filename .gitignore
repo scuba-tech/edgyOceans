@@ -11,6 +11,8 @@
 for*/
 Pack*.html
 *.prj
+*Executable*/
+*executable*/
 
 # Excluding test files
 Output*
