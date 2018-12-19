@@ -16,7 +16,8 @@ Pack*.html
 
 # Excluding test files
 Output*
-# HW*/
+HW*/
+FINAL*/
 
 # Compiled MEX binaries (all platforms)
 *.mex*
